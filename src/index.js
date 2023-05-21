@@ -67,7 +67,7 @@ const STEPS_PER_FRAME = 5; //количество дополнительных �
 
 
 
-const worldOctree = new Octree();
+let worldOctree = new Octree();
 
 const playerCollider = new Capsule( new THREE.Vector3( 0, 0.35, 0 ), new THREE.Vector3( 0, 1, 0 ), 0.35 ); //объект для расчета коллизий игрока
 
@@ -244,13 +244,15 @@ function controls( deltaTime ) {
 
 }
 
+
+//загрузка локации на сцену
 const loader = new GLTFLoader().setPath( './models/gltf/' );
 
 loader.load( 'collision-world.glb', ( gltf ) => {
 
     scene.add( gltf.scene );
 
-    worldOctree.fromGraphNode( gltf.scene );
+    worldOctree.fromGraphNode( scene ); //при последующем добавлении объектов на сцену надо заново вызывать формирование дерева
 
     gltf.scene.traverse( child => {
 
@@ -324,3 +326,35 @@ function animate() {
     requestAnimationFrame( animate );
 
 }
+
+
+
+//загрузка картинок
+/*
+const loader = new THREE.TextureLoader();
+
+// load a resource
+loader.load(
+    'media/pine-tree.png',
+    function ( texture ) {
+        const material = new THREE.MeshBasicMaterial( {
+            map: texture,
+            side: THREE.DoubleSide,
+            alphaTest:.5
+        });
+        const meshTexture = new THREE.Mesh(
+            new THREE.PlaneGeometry(.235,.235),
+            material
+        );
+        meshTexture.position.set(.62,1,-.37);
+        meshTexture.rotation.set(0,1.95,0);
+        meshTexture.scale.set(0,0,0);
+        scene.add(meshTexture)
+        parent.add(meshTexture)
+        anime({targets:meshTexture.scale,x:[0,.7],y:[0,.7],z:[0,1],duration:600,easing:'linear'}) //библиотека анимации - плавное появление
+    },
+    undefined,
+    function ( e ) {
+        console.error( e );
+    }
+);*/
