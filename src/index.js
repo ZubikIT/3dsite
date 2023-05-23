@@ -15,19 +15,21 @@ const clock = new THREE.Clock();
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color( 0x88ccee ); //вынести в настройки
-scene.fog = new THREE.Fog( 0x88ccee, 0, 50 ); // настройка тумана - вынести
+scene.fog = new THREE.Fog( 0xFCEFC1, 0, 50 ); // настройка тумана - вынести
 
 const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 1000 ); //камера от первого лица игрока будет, ее поворот управляется мышью, перемещение - кнопками
 camera.rotation.order = 'YXZ';
 
+/*
 const fillLight1 = new THREE.HemisphereLight( 0x8dc1de, 0x00668d, 0.5 ); //HemisphereLight( skyColor : Integer, groundColor : Integer, intensity : Float ) - вынести
 fillLight1.position.set( 2, 5, 1 );
 //const helperHemisphereLight = new THREE.HemisphereLightHelper( fillLight1, 1 );
 scene.add( fillLight1 );
 //scene.add( helperHemisphereLight );
+*/
 
-const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.8 );
-directionalLight.position.set( - 5, 25, - 1 );
+const directionalLight = new THREE.DirectionalLight(  'white', 2 );
+directionalLight.position.set( 0, 1, 0 );
 directionalLight.castShadow = true;            //дорогая операция, стоит подумать над целесобразностью ее использования
 directionalLight.shadow.camera.near = 0.01;    //настройка камеры для теней - с помощью ее строятся тени
 directionalLight.shadow.camera.far = 500;
@@ -37,11 +39,29 @@ directionalLight.shadow.camera.top	= 30;
 directionalLight.shadow.camera.bottom = - 30;
 directionalLight.shadow.mapSize.width = 1024;
 directionalLight.shadow.mapSize.height = 1024;
-directionalLight.shadow.radius = 4;
+directionalLight.shadow.radius = 1;
 directionalLight.shadow.bias = - 0.00006;
 //const helperDirectionalLightHelper = new THREE.DirectionalLightHelper( directionalLight, 1 );
 //scene.add( helperDirectionalLightHelper );
 scene.add( directionalLight );
+
+//const ambientLight = new THREE.AmbientLight( 0x404040, 2);
+//scene.add( ambientLight );
+
+
+const d1 = new THREE.DirectionalLight(  0xFCEFC1, 1 );
+d1.position.set( 0, 0.5, 0 );
+d1.target.position.set(-1, 0.1, 1);
+const h1 = new THREE.DirectionalLightHelper( d1, 1 );
+//scene.add( h1 );
+scene.add( d1 );
+
+const d2 = new THREE.DirectionalLight( 0xFCEFC1, 1 );
+d2.position.set( 0, 0.5, 0 );
+d2.target.position.set(1, 0.1, -1);
+const h2 = new THREE.DirectionalLightHelper( d2, 1 );
+//scene.add( h2 );
+scene.add( d2 );
 
 const container = document.getElementById( 'container' );
 
@@ -206,7 +226,7 @@ function getSideVector() {
 function controls( deltaTime ) {
 
     // gives a bit of air control
-    const speedDelta = deltaTime * ( playerOnFloor ? 25 : 8 );
+    const speedDelta = deltaTime * ( playerOnFloor ? 10 : 8 );
 
     if ( keyStates[ 'KeyW' ] ) {
 
@@ -236,7 +256,7 @@ function controls( deltaTime ) {
 
         if ( keyStates[ 'Space' ] ) {
 
-            playerVelocity.y = 15;
+            playerVelocity.y = 6;
 
         }
 
@@ -248,9 +268,11 @@ function controls( deltaTime ) {
 //загрузка локации на сцену
 const loader = new GLTFLoader().setPath( './models/gltf/' );
 
-loader.load( 'collision-world.glb', ( gltf ) => {
+loader.load( 'gallerypacked2.glb', ( gltf ) => {
 
     scene.add( gltf.scene );
+
+    gltf.scene.scale.set( 0.4, 0.4, 0.4 )
 
     worldOctree.fromGraphNode( scene ); //при последующем добавлении объектов на сцену надо заново вызывать формирование дерева
 
